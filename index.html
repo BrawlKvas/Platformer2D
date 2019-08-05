@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <style>
+        @import url('https://fonts.googleapis.com/css?family=Lacquer&display=swap');
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Lacquer', sans-serif; 
+        }
+
+        .d-none {
+            display: none !important;
+        }
+
+        .rules {
+            position: absolute;
+            top: 50px;
+            left: 100px;
+            color: white;
+        }
+        .hidden {
+            opacity: 0;
+            transition: 2s;
+        }
+        .rules p {
+            font-size: 24px;
+        }
+        .rules span {
+            font-weight: bold;
+            font-size: 32px;
+        }
+
+        .gameOver {
+            display: flex;
+            flex-direction: column;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%; 
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 52px;
+            background-color: #303952;
+        }
+
+        .gameOver p {
+            margin-top: 0px;
+        }
+        
+    </style>
+    <title>Adventures</title>
+</head>
+<body>
+    <div class="rules" id="rules">
+        <p><span>Constorl:</span> w - UP | a - LEFT | d - RIGHT</p>
+        <p><span>Danger:</span> red platforms</p>
+        <p><span>Purpose:</span> To find the chest</p>
+    </div>
+    <canvas id="canvas"></canvas>
+    <div class="gameOver d-none" id="gameOver">
+        <p>You winner</p>
+        <p>Аuthor: Pukki Konstantin</p>
+        <a href="./test.html">GG</a>
+    </div>
+    <script src="./dist/main.js"></script>
+</body>
+</html>
