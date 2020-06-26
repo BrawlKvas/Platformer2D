@@ -1,3 +1,3 @@
 # Platformer
 2D платформер на javascript
-https://nobrouk.github.io
+:heavy_exclamation_mark: Переделать управление
