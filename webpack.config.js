@@ -15,7 +15,15 @@ let conf = {
             {
                 test: /\.test$/,
                 loader: 'babel-loader',
-            }
+            },
+            {
+                test: /\.(png|jpe?g|gif)$/i,
+                use: [
+                    {
+                        loader: 'file-loader',
+                    },
+                ],
+            },
         ]
     },
     devtool: 'source-map'

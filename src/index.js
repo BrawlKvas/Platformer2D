@@ -3,10 +3,10 @@ import Game from './game';
 let $ = new Game();
 
 $.addObject("Player", "player", {
-    x: 0,
-    y: 0,
-    width: 23,
-    height: 45,
+    x: 100,
+    y: 100,
+    width: 42,
+    height: 60,
 });
 
 $.addObject("Platform", "", {
@@ -325,14 +325,14 @@ $.addObject("Platform", "", {
     x: 6900,
     y: 615,
     width: 25,
-    height: 185,
+    height: 130,
     color: '#ff9f43',
     colliding: true
 });
 $.addObject("Platform", "", {
     x: 6925,
     y: 615,
-    width: 375,
+    width: 300,
     height: 25,
     color: '#ff9f43',
     colliding: true

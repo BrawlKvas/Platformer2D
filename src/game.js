@@ -8,7 +8,6 @@ let ActivePlatform = platform.ActivePlatform;
 import chest from './chest';
 let Chest = chest;
 
-
 class Game {
     constructor() {
         this.canvas = document.getElementById('canvas');
@@ -131,7 +130,9 @@ class Game {
         this.objectWorld.forEach(elem => {
             elem.step();
         });
+
         this.main();
+        
         if (this.mainLoop) {
             requestAnimationFrame(this.render.bind(this));
         }

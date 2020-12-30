@@ -1,132 +1,178 @@
-function createTexture(w, h) {
-    let canvas = document.createElement('canvas');
-    canvas.width = w;
-    canvas.height = h;
-    let ctx = canvas.getContext('2d');
-    let setColor = (color) => {ctx.fillStyle = color}
-
-    setColor('#f3a683'); // Лицо
-    ctx.fillRect(0, 0, w, h * 0.55);
-
-    setColor('#f5cd79'); // Волосы
-    ctx.fillRect(0, 0, w, h * 0.15);
-    ctx.fillRect(0, 0, w * 0.1, h * 0.25);
-    ctx.fillRect(w, 0, -w * 0.1, h * 0.25);
-
-    // setColor('#63cdda'); // Глаза
-    // ctx.fillRect(w * 0.25, h * 0.25, w * 0.12, h * 0.17);
-    // ctx.fillRect(w * 0.75, h * 0.25, -w * 0.12, h * 0.17);
-
-    setColor('#546de5'); // Штаны
-    ctx.fillRect(0, h * 0.54, w, h * 0.2);
-    ctx.fillRect(0, h * 0.68, w * 0.42, h * 0.32);    
-    ctx.fillRect(w, h * 0.68, -w * 0.42, h * 0.32);   
-
-    setColor('#574b90'); // Обувь
-    ctx.fillRect(0, h, w * 0.42, -h * 0.1);   
-    ctx.fillRect(w, h, -w * 0.42, -h * 0.1);   
-    
-    setColor('#f3a683'); // Руки
-    ctx.fillRect(0, h * 0.54, w * 0.22, h * 0.28);
-    ctx.fillRect(w, h * 0.54, -w * 0.22, h * 0.28);
-
-    setColor('#596275'); // Плечи
-    ctx.fillRect(0, h * 0.54, w * 0.22, h * 0.1);
-    ctx.fillRect(w, h * 0.54, -w * 0.22, h * 0.1);
-
-    return canvas;
-}
-
+import tilesheet from './assets/adventurer_tilesheet.png'
 
 class Player {
-    constructor({x, y, height, width}) {
-        this.w = width;
-        this.h = height;
+    constructor({ x, y, height, width }) {
+        this.w = width
+        this.h = height
 
-        this.texture = createTexture(this.w, this.h);
+        this.x = x
+        this.y = y
 
-        this.x = x;
-        this.y = y;
+        this.dx = 0
+        this.dy = 0
 
-        this.dx = 0;
-        this.dy = 0;
+        this.tilesheet = new Image()
+        this.tilesheet.src = tilesheet
 
-        this.speedRun = 3.5;
-        this.pulseJump = 6;
+        this.view = document.createElement('canvas')
+        this.view.width = this.w
+        this.view.height = this.h
+        this.viewCtx = this.view.getContext('2d')
 
-        this.isPhysics = true;
-        this.isColliding = true;
+        this.controller = { // Pressing a key
+            up: false,
+            down: false,
+            left: false,
+            right: false
+        }
 
-        this.viewPort = true;
+        this.movement = {
+            state: 0, // 0 - rest, 1 - run, 2 - jump,
+            direction: 0 // 0 - left, 1 - right
+        }
 
-        this.game;
+        this.speedRun = 3.5
+        this.pulseJump = 6
+
+        this.isPhysics = true
+        this.isColliding = true
+
+        this.viewPort = true
+
+        this.game
     }
 
     birth() {
-        document.addEventListener('keydown', this.keyEvents.bind(this));
-        document.addEventListener('keyup', this.keyEvents.bind(this));
+        document.addEventListener('keydown', this.keyEvents.bind(this))
+        document.addEventListener('keyup', this.keyEvents.bind(this))
     }
 
     keyEvents(e) {
-        let code = e.keyCode;
+        if (e.repeat)
+            return
 
-        if (e.type == 'keydown') {
-            if (code == 87) {
-                this.jump();
-            } else if (code == 68) {
-                this.run(1, 0);
-            } else if (code == 65) {
-                this.run(1, 1);
+        if (e.type === 'keydown') {
+            switch (e.code) {
+                case 'KeyW':
+                    this.controller.up = true
+                    break
+                case 'KeyA':
+                    this.controller.left = true
+                    this.movement.direction = 0
+                    break
+                case 'KeyD':
+                    this.controller.right = true
+                    this.movement.direction = 1
+                    break
+                default:
+                    return
             }
-        } else if (e.type == 'keyup') {
-            if (code == 68) {
-                this.run(0, 0);
-            } else if (code == 65) {
-                this.run(0, 1);
+        } else if (e.type === 'keyup') {
+            switch (e.code) {
+                case 'KeyW':
+                    this.controller.up = false
+                    break
+                case 'KeyA':
+                    this.controller.left = false
+                    break
+                case 'KeyD':
+                    this.controller.right = false
+                    break
+                default:
+                    return
             }
         }
-
-        
     }
 
-    run(stats, side) {
-        if (stats == 1) {
-            if (side == 0) {
-                this.dx = this.speedRun;
-            } else {
-                this.dx = -this.speedRun;
-            }
-        } else {
-            this.dx = 0;
+    calcDirectionSpeed() {
+        this.dx = this.controller.left && this.controller.right ? 0 :
+            this.controller.left ? -this.speedRun :
+                this.controller.right ? this.speedRun : 0
+
+        if (this.controller.up) {
+            this.jump()
         }
-        
     }
 
     jump() {
-        if (this.dy == 0) this.dy = -this.pulseJump;
+        if (this.dy == 0) this.dy = -this.pulseJump
     }
 
     collidingX() {
-        this.dx = 0;
+        this.dx = 0
     }
 
     collidingY() {
-        this.dy = 0;
+        this.dy = 0
     }
 
     position() {
-        this.x += this.dx;
-        this.y += this.dy;
+        this.x += this.dx
+        this.y += this.dy
+
+        this.calcDirectionSpeed()
+
+        if (this.dy !== 0)
+            this.movement.state = 2
+        else if (this.controller.left || this.controller.right)
+            this.movement.state = 1
+        else
+            this.movement.state = 0
+    }
+
+    defview() {
+        this.viewCtx.clearRect(0, 0, this.w, this.h)
+        this.viewCtx.save()
+
+        if (!this.movement.direction) {
+            this.viewCtx.translate(this.w / 2, this.h / 2)
+            this.viewCtx.scale(-1, 1)
+        }
+
+        let xCut, yCut
+
+        switch (this.movement.state) {
+            case 0:
+                xCut = 0
+                yCut = 0
+                break
+            case 1:
+                xCut = 0
+                yCut = 110
+                break
+            case 2:
+                xCut = 80
+                yCut = 0
+                break
+            default:
+                console.error('Unknown status value')
+        }
+        
+        this.viewCtx.drawImage(
+            this.tilesheet, 
+            xCut, yCut, 
+            80, 102, 
+            !this.movement.direction ? -this.w / 2 : 0, !this.movement.direction ? -this.h / 2 : 0, 
+            this.w, this.h
+        )
+
+        this.viewCtx.restore()
     }
 
     drawHuman() {
-        this.game.ctx.drawImage(this.texture, this.x + this.game.camera.x, this.y + this.game.camera.y);
+        this.defview()
+
+        this.game.ctx.drawImage(
+            this.view,
+            this.x + this.game.camera.x, this.y + this.game.camera.y,
+            this.w, this.h
+        )
     }
 
     step() {
-        this.position();
-        this.drawHuman();
+        this.position()
+        this.drawHuman()
     }
 }
 
-export default Player;
+export default Player
